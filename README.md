@@ -8,7 +8,15 @@ METRONOME + CLIP = Delete
 
 NUDGE_DOWN + CLIP = Copy/Paste 
 
+SHIFT + CLIP/DEV VIEW = UNDO 
+
+SHIFT + DETAIL VIEW = REDO 
+
 User Mode toggles between sequencer and melodic.
+
+COMING SOON: 
+
+VU METERS 
 
 Install
 
@@ -21,5 +29,6 @@ Uncompres the release file at C:\Program Files\Ableton 10\Resources\MIDI Remote 
 https://i.imgur.com/LGx6NW5.gif
 
 thanks to:
+https://github.com/xnamahx/APC40_MkIIx
 http://martinpechmann.github.io/APC400000/
 https://github.com/cylab/APCequencer
