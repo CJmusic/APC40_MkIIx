@@ -119,10 +119,11 @@ class APC40_MkII(APC, OptimizedControlSurface):
 
     def _with_shift(self, button):
         return ComboElement(button, modifiers=[self._shift_button])
-
+    
     def _create_actions(self): 
             self._undo_button= self._with_shift(self._clip_device_button)
             self._redo_button= self._with_shift(self._detail_view_button)
+            self._capture_midi_button = self._with_shift(self._record_button)
 
             self._actions_component = ActionsComponent(
                 name='Global_Actions', 
@@ -133,9 +134,9 @@ class APC40_MkII(APC, OptimizedControlSurface):
                     # quantize_button=self._midimap['Quantize_Button']
                     undo_button= self._undo_button,
                     redo_button= self._redo_button,
+                    capture_midi_button = self._capture_midi_button
                 )
             )
-
 
 
     def _create_controls(self):
