@@ -1,22 +1,41 @@
-Custom midi script for APC 40 MKII modified from Ableton's live 10 default
+# APC40_MKIIx
+by chris joseph, xnamahx and others!  
 
-SHIFT + TAP TEMPO = Metronome 
+A custom remote script for the APC40 MKII for Ableton Live 10. For the version that works with Ableton Live 11 please see: 
+https://github.com/CJmusic/APC40_CJedit
 
-SHIFT + Nudge = Nudge 
+Changes:
 
-METRONOME + CLIP = Delete 
+- user mode is a step sequencer
+- nudge + + copies a clip 
+- nudge + - deletes a clip 
+- shift + nudge now nudges 
+- shift + clip view is undo 
+- shift + detail view is redo 
+- shift + record is capture midi
 
-NUDGE_DOWN + CLIP = Copy/Paste 
+Planned Changes: 
 
-SHIFT + CLIP/DEV VIEW = UNDO 
+- shift + bank turns on VU meters 
 
-SHIFT + DETAIL VIEW = REDO 
+Current Bugs: 
+- Pads are always lit upon disconnect, velocity slider pads always lit (issue is with the make_button command ControlElementUtils.py)
+Special Thanks to: 
 
-User Mode toggles between sequencer and melodic.
+gluon: https://github.com/gluon/AbletonLive11_MIDIRemoteScripts
 
-COMING SOON: 
+xnamanahx: https://github.com/xnamahx/APC40_MkIIx
 
-VU METERS 
+cylab: https://github.com/cylab/APCequencer
+
+martinpechmann: https://github.com/martinpechmann/APC400000
+
+hanzpetrov: http://remotescripts.blogspot.com/p/apc-64-40.html
+
+fabriziopoce: https://github.com/matthewcieplak/APC_64_40_9l  
+
+willmarshall: https://github.com/willrjmarshall/AbletonDJTemplateUnsupported
+
 
 Install
 
@@ -27,8 +46,3 @@ Uncompres the release file at C:\Program Files\Ableton 10\Resources\MIDI Remote 
 ![alt text](https://i.imgur.com/mCzd1rQ.png)
 
 https://i.imgur.com/LGx6NW5.gif
-
-thanks to:
-https://github.com/xnamahx/APC40_MkIIx
-http://martinpechmann.github.io/APC400000/
-https://github.com/cylab/APCequencer
