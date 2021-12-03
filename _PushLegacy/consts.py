@@ -1,10 +1,6 @@
 #Embedded file name: /Users/versonator/Jenkins/live/output/mac_64_static/Release/midi-remote-scripts/Push/consts.py
 from _Framework.Resource import DEFAULT_PRIORITY
 import sys
-
-ACTION_BUTTON_COLORS = dict(color='DefaultButton.Off', pressed_color='DefaultButton.On', disabled_color='DefaultButton.Disabled')
-
-
 DISPLAY_LENGTH = 72
 DISPLAY_BLOCK_LENGTH = 18
 HANDSHAKE_TIMEOUT = 1.0

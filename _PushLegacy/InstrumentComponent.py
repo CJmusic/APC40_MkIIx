@@ -8,18 +8,14 @@ from _Framework.DisplayDataSource import DisplayDataSource, adjust_string_crop
 from _Framework.Util import recursive_map, index_if, forward_property, first
 from _Framework.SubjectSlot import subject_slot, subject_slot_group
 from _Framework.SlideComponent import SlideComponent, Slideable
-
-from ._PushLegacy.ScrollableList import ListComponent
-from ._PushLegacy.MelodicPattern import MelodicPattern, Modus, pitch_index_to_string
-from ._PushLegacy.MatrixMaps import NON_FEEDBACK_CHANNEL
-from ._PushLegacy.SlideableTouchStripComponent import SlideableTouchStripComponent
-from ._PushLegacy.TouchStripElement import TouchStripElement, TouchStripModes, MODWHEEL_BEHAVIOUR, DEFAULT_BEHAVIOUR
+from MessageBoxComponent import Messenger
+from ScrollableList import ListComponent
+from MelodicPattern import MelodicPattern, Modus, pitch_index_to_string
+from MatrixMaps import NON_FEEDBACK_CHANNEL
+from SlideableTouchStripComponent import SlideableTouchStripComponent
+from TouchStripElement import TouchStripElement, TouchStripModes, MODWHEEL_BEHAVIOUR, DEFAULT_BEHAVIOUR
 import Sysex
 import consts
-
-from ._PushLegacy.InstrumentComponent import InstrumentComponent
-
-from APCMessenger import APCMessenger
 
 class InstrumentPresetsComponent(DisplayingModesComponent):
     is_horizontal = True
@@ -297,25 +293,13 @@ class InstrumentScalesComponent(CompoundComponent):
         self._info_sources[1].set_display_string(str(self._modus_list.scrollable_list.selected_item))
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-class InstrumentComponent(InstrumentComponent, Slideable, APCMessenger):
+class InstrumentComponent(CompoundComponent, Slideable, Messenger):
     """
     Class that sets up the button matrix as a piano, using different
     selectable layouts for the notes.
     """
     touch_strip_toggle = ToggleButtonControl()
-    #midi_channels = range(2, 5)
+    midi_channels = range(5, 13)
 
     def __init__(self, *a, **k):
         super(InstrumentComponent, self).__init__(*a, **k)

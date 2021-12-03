@@ -1,4 +1,4 @@
-# Embedded file name: /Users/versonator/Jenkins/live/output/mac_64_static/Release/midi-remote-scripts/Push/StepSeqComponent.py
+#Embedded file name: /Users/versonator/Jenkins/live/output/mac_64_static/Release/midi-remote-scripts/Push/StepSeqComponent.py
 from __future__ import with_statement
 import Live
 from itertools import imap, chain, starmap
@@ -6,23 +6,11 @@ from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.CompoundComponent import CompoundComponent
 from _Framework.SubjectSlot import subject_slot, Subject, subject_slot_group
 from _Framework.Util import forward_property, find_if
-from ._PushLegacy.NoteEditorComponent import NoteEditorComponent
-from .LoopSelectorComponent import LoopSelectorComponent
-from ._PushLegacy.PlayheadComponent import PlayheadComponent
-from ._PushLegacy.NoteEditorPaginator import NoteEditorPaginator
-
-from .APCNoteEditorComponent import APCNoteEditorComponent
-from .DrumGroupComponent import DrumGroupComponent
-
-# from ableton.v2.control_surface.control import control_list, ButtonControl
-
-
-from .MatrixMaps import PLAYHEAD_FEEDBACK_CHANNELS  # added 10/17
-
-from .InstrumentComponent import InstrumentComponent  # added 10/17
-
-track = Live.Song.Song.View.selected_track
-
+from DrumGroupComponent import DrumGroupComponent
+from NoteEditorComponent import NoteEditorComponent
+from LoopSelectorComponent import LoopSelectorComponent
+from PlayheadComponent import PlayheadComponent
+from NoteEditorPaginator import NoteEditorPaginator
 
 class DrumGroupFinderComponent(ControlSurfaceComponent, Subject):
     """
@@ -67,7 +55,7 @@ class DrumGroupFinderComponent(ControlSurfaceComponent, Subject):
     def _update_listeners(self):
         root = self.root
         devices = list(find_instrument_devices(root))
-        chains = list(chain([root], *[d.chains for d in devices]))
+        chains = list(chain([root], *[ d.chains for d in devices ]))
         self._on_chains_changed.replace_subjects(devices)
         self._on_devices_changed.replace_subjects(chains)
 
@@ -76,8 +64,6 @@ class DrumGroupFinderComponent(ControlSurfaceComponent, Subject):
         if type(drum_group) != type(self._drum_group) or drum_group != self._drum_group:
             self._drum_group = drum_group
             self.notify_drum_group()
-
-        self._instrument = find_instrument_device(self.root)
 
 
 def find_instrument_devices(track_or_chain):
@@ -90,17 +76,6 @@ def find_instrument_devices(track_or_chain):
         if instrument.can_have_chains:
             return chain([instrument], *imap(find_instrument_devices, instrument.chains))
     return []
-
-def find_instrument_device(track_or_chain):
-    """
-    Returns a list with all instrument rack descendants from a track
-    or chain.
-    """
-    instrument = find_if(lambda d: d.type == Live.Device.DeviceType.instrument, track_or_chain.devices)
-    if instrument and not instrument.can_have_drum_pads:
-        if instrument.can_have_chains:
-            return instrument
-    return None
 
 
 def find_drum_group_device(track_or_chain):
@@ -115,65 +90,33 @@ def find_drum_group_device(track_or_chain):
             return find_if(bool, imap(find_drum_group_device, instrument.chains))
 
 
-# switched 10/17
-# class StepSeqComponent(CompoundComponent):
-#   """ Step Sequencer Component """
-
-#   def __init__(self, clip_creator = None, skin = None, grid_resolution = None, NoteEditorComponent = None, InstrumentComponent = None, *a, **k):
-
-# continue
-
 class StepSeqComponent(CompoundComponent):
     """ Step Sequencer Component """
 
-    #  del_button = ButtonControl()
-
-    def __init__(self, clip_creator=None, skin=None, grid_resolution=None, note_editor_settings=None, *a, **k):
+    def __init__(self, clip_creator = None, skin = None, grid_resolution = None, note_editor_settings = None, *a, **k):
         super(StepSeqComponent, self).__init__(*a, **k)
-        if not clip_creator:
+        if not (clip_creator):
             raise AssertionError
         if not skin:
             raise AssertionError
-
-        # added 10/17
-
-        if not InstrumentComponent:
-            raise AssertionError
-        if not APCNoteEditorComponent:
-            raise AssertionError
-
-        # continue
-
         self._grid_resolution = grid_resolution
         note_editor_settings and self.register_component(note_editor_settings)
         self._note_editor, self._loop_selector, self._big_loop_selector, self._drum_group = self.register_components(
-            APCNoteEditorComponent(settings_mode=note_editor_settings, clip_creator=clip_creator,
-                                grid_resolution=self._grid_resolution),
+            NoteEditorComponent(settings_mode=note_editor_settings, clip_creator=clip_creator, grid_resolution=self._grid_resolution),
             LoopSelectorComponent(clip_creator=clip_creator),
-            LoopSelectorComponent(clip_creator=clip_creator, measure_length=0.25),  # must match loop selector
+            LoopSelectorComponent(clip_creator=clip_creator, measure_length=2.0),
             DrumGroupComponent()
         )
-
-        #    self._note_selector = InstrumentComponent
-        self._instrument = InstrumentComponent
         self._paginator = NoteEditorPaginator([self._note_editor])
-        #self._big_loop_selector.set_enabled(False)
+        self._big_loop_selector.set_enabled(False)
         self._big_loop_selector.set_paginator(self._paginator)
-        self._loop_selector.set_enabled(False)
-        self._note_editor.set_enabled(False)
         self._loop_selector.set_paginator(self._paginator)
-        self._note_editor_matrix = None
-
         self._shift_button = None
         self._delete_button = None
         self._mute_button = None
         self._solo_button = None
-
+        self._note_editor_matrix = None
         self._on_pressed_pads_changed.subject = self._drum_group
-        self._on_playing_position_changed.subject = self._loop_selector
-
-        #self._on_selected_note_changed.subject = self._instrument   # added 10/17   throws error. find sloution
-
         self._on_detail_clip_changed.subject = self.song().view
         self._detail_clip = None
         self._playhead = None
@@ -194,7 +137,8 @@ class StepSeqComponent(CompoundComponent):
                     (84, 90),
                     (76, 82),
                     (68, 74)
-                ))), feedback_channels=[PLAYHEAD_FEEDBACK_CHANNELS]))
+                )))
+            ))
         self._skin = skin
         self._playhead_color = 'NoteEditor.Playhead'
 
@@ -217,10 +161,7 @@ class StepSeqComponent(CompoundComponent):
 
     def _update_playhead_color(self):
         if self.is_enabled() and self._skin and self._playhead:
-            pass
-        #    self._playhead.velocity = to_midi_value(self._skin[self._playhead_color])  # switched 10/17
-
-        #    self._playhead.velocity = int(self._skin[self._playhead_color])
+            self._playhead.velocity = int(self._skin[self._playhead_color])
 
     def set_drum_group_device(self, drum_group_device):
         if not (not drum_group_device or drum_group_device.can_have_drum_pads):
@@ -259,9 +200,6 @@ class StepSeqComponent(CompoundComponent):
         self._shift_button = button
         self._on_shift_value.subject = button
 
-    #   def set_del_button(self, button):
-    #       self._set_del.subject = button
-
     def set_delete_button(self, button):
         self._delete_button = button
         self._drum_group.set_delete_button(button)
@@ -274,10 +212,6 @@ class StepSeqComponent(CompoundComponent):
 
     def set_loop_selector_matrix(self, matrix):
         self._loop_selector.set_loop_selector_matrix(matrix)
-
-    #    # lewie note? 15/10/17 07:12
-    #    def set_note_matrix(self, matrix):
-    #        self._note_selector.set_matrix(matrix)
 
     def set_short_loop_selector_matrix(self, matrix):
         self._loop_selector.set_short_loop_selector_matrix(matrix)
@@ -304,7 +238,6 @@ class StepSeqComponent(CompoundComponent):
     def set_button_matrix(self, matrix):
         self._note_editor_matrix = matrix
         self._update_note_editor_matrix()
-
 
     def set_quantization_buttons(self, buttons):
         self._grid_resolution.set_buttons(buttons)
@@ -337,34 +270,10 @@ class StepSeqComponent(CompoundComponent):
         self._big_loop_selector.set_detail_clip(clip)
         self._playhead_component.set_clip(self._detail_clip)
 
-
-
-
-    @subject_slot('playing_position')
-    def _on_playing_position_changed(self):
-        #self._loop_selector._on_playing_position_changed()
-        #self._big_loop_selector._on_playing_position_changed()
-
-        self._update_note_editor_matrix()
-
-        self._loop_selector._update_page_and_playhead_leds()
-        self._loop_selector._update_page_selection()
-
-        self._big_loop_selector._update_page_and_playhead_leds()
-        self._big_loop_selector._update_page_selection()
-
-
-
     @subject_slot('value')
     def _on_shift_value(self, value):
         if self.is_enabled():
             self._update_note_editor_matrix(enable_big_loop_selector=value and not self._loop_selector.is_following)
-
-    @subject_slot('selected_note')
-    def _on_selected_note_changed(self):
-        selected_note = self._instrument.selected_note
-        if selected_note >= 0:
-            self._note_editor.editing_note = selected_note
 
     @subject_slot('selected_drum_pad')
     def _on_selected_drum_pad_changed(self):
@@ -374,24 +283,18 @@ class StepSeqComponent(CompoundComponent):
             if selected_drum_pad:
                 self._note_editor.editing_note = selected_drum_pad.note
 
-    # @subject_slot('value')
-    #  def _set_del(self, value):
-
-    #      if value!=0:
-    #         self.song().capture_and_insert_scene()
-    # self.song().duplicate_scene(0)  # will only duplicate the specified scene... not selected scene
-
     @subject_slot('pressed_pads')
     def _on_pressed_pads_changed(self):
-
-        #   self._note_editor.modify_all_notes_enabled = bool(self._instrument.pressed_pads)
-
         self._note_editor.modify_all_notes_enabled = bool(self._drum_group.pressed_pads)
 
-    """commented out lew 10/17. trying to get big loop and note matrix to merge"""
-
     def _update_note_editor_matrix(self, enable_big_loop_selector = False):
-        self._note_editor.set_button_matrix(self._note_editor_matrix)
-
-
-
+        if enable_big_loop_selector:
+            self._note_editor.set_enabled(False)
+            self._note_editor.set_button_matrix(None)
+            self._big_loop_selector.set_enabled(True)
+            self._big_loop_selector.set_loop_selector_matrix(self._note_editor_matrix)
+        else:
+            self._big_loop_selector.set_enabled(False)
+            self._big_loop_selector.set_loop_selector_matrix(None)
+            self._note_editor.set_enabled(True)
+            self._note_editor.set_button_matrix(self._note_editor_matrix)

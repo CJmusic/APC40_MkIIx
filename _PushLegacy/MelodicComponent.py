@@ -4,23 +4,13 @@ from _Framework.Util import forward_property, find_if
 from _Framework.SubjectSlot import subject_slot
 from _Framework.ModesComponent import ModesComponent, LayerMode
 from MessageBoxComponent import Messenger
-#from .APCMessenger import APCMessenger
-
-
-from _Framework.ClipCreator import ClipCreator
-from _Framework.Layer import Layer
-
-from .MatrixMaps import NON_FEEDBACK_CHANNEL, PLAYHEAD_FEEDBACK_CHANNELS
-from .InstrumentComponent import InstrumentComponent
-from .NoteEditorComponent import NoteEditorComponent
-from .APCNoteEditorComponent import APCNoteEditorComponent
-
-from .PlayheadComponent import PlayheadComponent
-from ._PushLegacy.MelodicPattern import pitch_index_to_string
-from .LoopSelectorComponent import LoopSelectorComponent
-from .NoteEditorPaginator import NoteEditorPaginator
-from .NoteSettings import NoteEditorSettingsComponent
-
+from MatrixMaps import FEEDBACK_CHANNELS, NON_FEEDBACK_CHANNEL
+from InstrumentComponent import InstrumentComponent
+from NoteEditorComponent import NoteEditorComponent
+from PlayheadComponent import PlayheadComponent
+from MelodicPattern import pitch_index_to_string
+from LoopSelectorComponent import LoopSelectorComponent
+from NoteEditorPaginator import NoteEditorPaginator
 NUM_NOTE_EDITORS = 7
 
 class MelodicComponent(ModesComponent, Messenger):
@@ -29,12 +19,8 @@ class MelodicComponent(ModesComponent, Messenger):
         super(MelodicComponent, self).__init__(*a, **k)
         self._matrices = None
         self._grid_resolution = grid_resolution
-        
-        clip_creator = ClipCreator()
-        
         self._instrument = self.register_component(InstrumentComponent())
-
-        self._note_editors = self.register_components(*[APCNoteEditorComponent(settings_mode=note_editor_settings, clip_creator=clip_creator, grid_resolution=self._grid_resolution, is_enabled=False) for _ in xrange(NUM_NOTE_EDITORS)])
+        self._note_editors = self.register_components(*[ NoteEditorComponent(settings_mode=note_editor_settings, clip_creator=clip_creator, grid_resolution=self._grid_resolution, is_enabled=False) for _ in xrange(NUM_NOTE_EDITORS) ])
         self._paginator = NoteEditorPaginator(self._note_editors)
         self._loop_selector = self.register_component(LoopSelectorComponent(clip_creator=clip_creator, paginator=self._paginator, is_enabled=False))
         self._playhead = None
@@ -51,7 +37,6 @@ class MelodicComponent(ModesComponent, Messenger):
         self._on_scales_changed.subject = scales
         self._on_scales_preset_changed.subject = scales._presets
         self._on_notes_changed.subject = self._instrument
-        self._on_playing_position_changed.subject = self._loop_selector
         self._on_selected_mode_changed.subject = self
         self._on_detail_clip_changed()
         self._update_note_editors()
@@ -87,10 +72,6 @@ class MelodicComponent(ModesComponent, Messenger):
                 editor.set_button_matrix(matrix)
 
         self._update_matrix_channels_for_playhead()
-
-    def set_velocity_slider(self, button_slider):
-        for row, note_editor in enumerate(self._note_editors):
-            note_editor.set_velocity_slider(button_slider)
 
     def _get_playhead_color(self):
         self._playhead_color
@@ -163,8 +144,7 @@ class MelodicComponent(ModesComponent, Messenger):
                         if button:
                             if pattern[y].index != None:
                                 button.set_identifier(x)
-                                #button.set_channel(NON_FEEDBACK_CHANNEL)
-                                button.set_channel(PLAYHEAD_FEEDBACK_CHANNELS[y])
+                                button.set_channel(FEEDBACK_CHANNELS[y])
                             else:
                                 button.set_identifier(button._original_identifier)
                                 button.set_channel(NON_FEEDBACK_CHANNEL)
@@ -193,19 +173,3 @@ class MelodicComponent(ModesComponent, Messenger):
                 start_note = self._instrument._pattern.note(0, 0).index
                 end_note = self._instrument._pattern.note(7, 7).index
             self.show_notification(message % (pitch_index_to_string(start_note), pitch_index_to_string(end_note)))
-
-
-
-    @subject_slot('playing_position')
-    def _on_playing_position_changed(self):
-        pass
-        #self._loop_selector._on_playing_position_changed()
-        #self._big_loop_selector._on_playing_position_changed()
-
-        #self._update_note_editor_matrix()
-
-        self._loop_selector._update_page_and_playhead_leds()
-        self._loop_selector._update_page_selection()
-
-        #self._big_loop_selector._update_page_and_playhead_leds()
-        #self._big_loop_selector._update_page_selection()

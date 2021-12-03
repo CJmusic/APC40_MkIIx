@@ -14,7 +14,7 @@ from .NoteSettings import NoteEditorSettingsComponent
 from .APCMessenger import APCMessenger
 #from .APCNoteEditorComponent import APCNoteEditorComponent
 
-# from _PushLegacy.LoopSelectorComponent import LoopSelectorComponent
+# from ._PushLegacy.LoopSelectorComponent import LoopSelectorComponent
 
 # from functools import partial
 # from _Framework import Task
