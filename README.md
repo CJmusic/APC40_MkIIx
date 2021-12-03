@@ -20,6 +20,9 @@ Planned Changes:
 
 Current Bugs: 
 - Pads are always lit upon disconnect, velocity slider pads always lit (issue is with the make_button command ControlElementUtils.py)
+- VU meters are leaking to other modes
+
+
 Special Thanks to: 
 
 gluon: https://github.com/gluon/AbletonLive11_MIDIRemoteScripts
