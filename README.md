@@ -12,7 +12,6 @@ Changes:
 - shift + nudge now nudges 
 - shift + clip view is undo 
 - shift + detail view is redo 
-- shift + record is capture midi
 
 Planned Changes: 
 
